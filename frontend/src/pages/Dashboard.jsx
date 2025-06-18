@@ -1,10 +1,24 @@
+import { Container, Typography, Button, Box } from '@mui/material';
+
 export default function Dashboard() {
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1 style={{ marginBottom: '1rem' }}>Dashboard</h1>
-      <button style={{ padding: '0.5rem 1rem', background: 'teal', color: 'white', border: 'none' }}>
-        Test Button
-      </button>
-    </div>
+    <Box
+      sx={{
+        bgcolor: 'background.default',
+        minHeight: '100vh',
+        color: 'text.primary',
+        py: 6,
+        px: 2,
+      }}
+    >
+      <Container maxWidth="sm">
+        <Typography variant="h4" gutterBottom>
+          Dashboard
+        </Typography>
+        <Button variant="contained" color="primary">
+          Dark Mode Button
+        </Button>
+      </Container>
+    </Box>
   );
 }
