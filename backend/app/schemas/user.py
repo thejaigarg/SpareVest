@@ -10,7 +10,7 @@ class UserCreate(UserClass):
 
 class UserInDB(UserClass):
     id: int
-    isActive: bool
+    is_active: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
