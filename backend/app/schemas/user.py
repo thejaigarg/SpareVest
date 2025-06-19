@@ -14,3 +14,6 @@ class UserInDB(UserClass):
 
     class Config:
         from_attributes = True
+
+class PasswordResetRequest(BaseModel):
+    email: EmailStr
