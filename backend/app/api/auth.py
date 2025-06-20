@@ -7,10 +7,10 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 
 from app.core.database import get_db
-from app.core.security import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
-from app.crud.user import authenticate_user, get_user_by_email
+from app.core.security import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, decode_access_token, hash_password
+from app.crud.user import authenticate_user, get_user_by_email, update_user_password
 from app.core.email import send_reset_email
-from app.schemas.user import UserInDB, PasswordResetRequest
+from app.schemas.user import UserInDB, PasswordResetRequest, PasswordResetConfirm
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
@@ -52,3 +52,27 @@ async def password_reset_request(
 
     background_tasks.add_task(send_reset_email, user.email, reset_link)
     return {"msg": msg}
+
+@router.post("/auth/password-reset/confirm")
+async def password_reset_confirm(
+    data: PasswordResetConfirm,
+    db: Session = Depends(get_db),
+):
+    try:
+        payload = decode_access_token(data.token)
+        email = payload.get("sub")
+        scope = payload.get("scope")
+        if (email is None) or (scope != "password_reset"):
+            raise HTTPException(status_code=400, detail="Invalid token.")
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid or expired token.")
+
+    user = get_user_by_email(db, email=email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+
+    # Set hashed password
+    new_hashed = hash_password(data.new_password)
+    update_user_password(db=db, user=user, new_hashed_password=new_hashed)
+
+    return {"msg": "Password updated successfully."}
