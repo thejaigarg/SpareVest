@@ -2,9 +2,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 import os
 
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
-import os
-
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from datetime import timedelta
