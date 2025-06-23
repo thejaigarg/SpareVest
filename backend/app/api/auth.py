@@ -5,6 +5,7 @@ import os
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from datetime import timedelta
+from fastapi.responses import JSONResponse
 
 from app.core.database import get_db
 from app.core.security import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, decode_access_token, hash_password
@@ -31,6 +32,17 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.post("/auth/logout")
+def logout():
+    """
+    Instruct the client to delete JWT from memory/local storage.
+    Stateless JWT cannot be revoked server-side without
+    extra infrastructure (like a blacklist).
+    """
+    return JSONResponse(
+        content={"msg": "Successfully logged out. Please remove your access token on the client."}
+    )
 
 @router.post("/auth/password-reset/request")
 async def password_reset_request(
