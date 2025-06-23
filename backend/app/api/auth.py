@@ -2,6 +2,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 import os
 
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+import os
+
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from datetime import timedelta
@@ -43,3 +46,24 @@ def logout():
     return JSONResponse(
         content={"msg": "Successfully logged out. Please remove your access token on the client."}
     )
+
+@router.post("/auth/password-reset/request")
+async def password_reset_request(
+    data: PasswordResetRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
+    user = get_user_by_email(db, data.email)
+    msg = "If an account with that email exists, you'll receive a password reset link."
+
+    if not user:
+        return {"msg": msg}
+
+    reset_token = create_access_token(
+        data={"sub": user.email, "scope": "password_reset"},
+        expires_delta=timedelta(minutes=30),
+    )
+    reset_link = f"{FRONTEND_URL}/reset-password?token={reset_token}"
+
+    background_tasks.add_task(send_reset_email, user.email, reset_link)
+    return {"msg": msg}
