@@ -35,3 +35,9 @@ def authenticate_user(db: Session, email: str, password: str):
     if not verify_password(password, user.hashed_password):
         return None
     return user
+
+def update_user_password(db: Session, user: User, new_hashed_password: str):
+    user.hashed_password = new_hashed_password
+    db.add(user)
+    db.commit()
+    db.refresh(user)
