@@ -14,3 +14,4 @@ class User(Base):
     is_active = Column(Integer, default=1)  # 1 = active, 0 = inactive
     role = Column(String, default="user", nullable=False)   # "user" or "admin"
     bank_accounts = relationship("BankAccount", back_populates="user")
+    transactions = relationship("Transaction", back_populates="user")
