@@ -2,6 +2,7 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from app.core.database import Base
+from sqlalchemy.orm import relationship
 
 class User(Base):
     __tablename__ = "users"
@@ -12,3 +13,4 @@ class User(Base):
     full_name = Column(String, nullable=True)
     is_active = Column(Integer, default=1)  # 1 = active, 0 = inactive
     role = Column(String, default="user", nullable=False)   # "user" or "admin"
+    bank_accounts = relationship("BankAccount", back_populates="user")
