@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api import user as user_router
 from app.api import auth as auth_router
+from app.api import bank_account as bank_account_router
 
 app = FastAPI()
 origins = [
@@ -21,3 +22,4 @@ app.add_middleware(
 )
 app.include_router(user_router.router)
 app.include_router(auth_router.router)
+app.include_router(bank_account_router.router)
