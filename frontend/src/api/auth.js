@@ -23,3 +23,15 @@ export async function signup({ email, full_name, password }) {
   });
   return response.data;
 }
+
+export async function getCurrentUser(token) {
+  const response = await axios.get(`${API_BASE_URL}/users/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data; // { email, full_name, id, is_active }
+}
+
+export async function requestPasswordReset(email) {
+  const response = await axios.post(`${API_BASE_URL}/auth/password-reset/request`, { email });
+  return response.data;
+}
