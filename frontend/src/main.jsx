@@ -1,17 +1,17 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App.jsx';
-import { ThemeProvider, CssBaseline } from '@mui/material';
-import { getTheme } from './styles/theme.js';
-import { BrowserRouter } from 'react-router-dom';
+// src/main.jsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
 
-const darkTheme = getTheme('dark');
+const theme = createTheme(); // MUI default theme
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter> {/* ✅ Fix: Wrap App with Router */}
+      <BrowserRouter>
         <App />
       </BrowserRouter>
     </ThemeProvider>
