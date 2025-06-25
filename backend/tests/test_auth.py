@@ -1,11 +1,9 @@
 # Auth tests
 import pytest
 from fastapi.testclient import TestClient
-from app.main import app
+from app.main import app    
 
-client = TestClient(app)
-
-def test_user_login_and_get_current_user():
+def test_user_login_and_get_current_user(client):
     # 1. Register a new user (or create one in the DB beforehand!)
     response = client.post("/users/", json={
         "email": "testuser@example.com",
@@ -31,7 +29,7 @@ def test_user_login_and_get_current_user():
     user = response.json()
     assert user["email"] == "testuser@example.com"
 
-def test_login_wrong_password():
+def test_login_wrong_password(client):
     # The user should already exist from the previous test, or create again as needed.
     response = client.post("/auth/token", data={
         "username": "testuser@example.com",
