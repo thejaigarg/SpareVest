@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { TextField, Button, Box, Typography, Alert, CircularProgress } from "@mui/material";
 import { login as loginApi } from "../api/auth";
 import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router-dom"; // <-- Import useNavigate
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -12,6 +13,7 @@ export default function Login() {
   const [success, setSuccess] = useState(false);
 
   const { login } = useAuth();
+  const navigate = useNavigate(); // <-- Create navigate
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,8 +24,7 @@ export default function Login() {
       const data = await loginApi(email, password);
       login(data.access_token);
       setSuccess(true);
-      // Optional: redirect to dashboard
-      // navigate("/dashboard");
+      navigate("/dashboard"); // <-- Redirect after success
     } catch (err) {
       setError(err?.response?.data?.detail || "Login failed");
     }

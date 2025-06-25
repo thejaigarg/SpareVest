@@ -13,3 +13,13 @@ export async function login(email, password) {
   });
   return response.data; // { access_token, token_type }
 }
+
+// Registers a new user
+export async function signup({ email, full_name, password }) {
+  const response = await axios.post(`${API_BASE_URL}/users/`, {
+    email,
+    full_name,
+    password,
+  });
+  return response.data;
+}
