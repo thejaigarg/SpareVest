@@ -11,6 +11,7 @@ class UserCreate(UserClass):
 class UserInDB(UserClass):
     id: int
     is_active: bool
+    role: str
 
     class Config:
         from_attributes = True
