@@ -19,7 +19,7 @@ export default function Navbar() {
   }, [token]);
 
   const handleLogout = () => {
-    logout();
+    logout(); // Call the logout function from useAuth
     navigate("/login");
   };
 
