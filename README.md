@@ -228,3 +228,14 @@ MIT
 
 - Inspired by Acorns, Stash, and modern personal finance apps.
 - Built as a resume/demo project by developers in two timezones.
+
+Alembic
+ alembic revision --autogenerate -m "Transction tables"
+alembic upgrade head      
+
+Docker
+List containers	docker ps
+Stop	docker stop <container_id_or_name>
+Remove	docker rm <container_id_or_name>
+Build new image	docker build -f backend/Dockerfile -t sparevest-backend ./backend
+Run new container	docker run --env-file .env -p 8000:8000 sparevest-backend
