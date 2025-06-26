@@ -1,21 +1,13 @@
-import React, { useState, useEffect } from "react";
+// src/pages/Profile.jsx
+import React, { useState } from "react";
 import { Container, Typography, Button, Alert, Box } from "@mui/material";
-import { getCurrentUser, requestPasswordReset } from "../api/auth";
+import { requestPasswordReset } from "../api/auth";
 import { useAuth } from "../hooks/useAuth";
 
 export default function Profile() {
-  const { token } = useAuth();
-  const [user, setUser] = useState(null);
+  const { token, user, setUser } = useAuth(); // Use the token and user from useAuth hook
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (token) {
-      getCurrentUser(token)
-        .then(setUser)
-        .catch(() => setUser(null));
-    }
-  }, [token]);
 
   const handlePasswordReset = async () => {
     setMessage("");
@@ -28,7 +20,7 @@ export default function Profile() {
     }
   };
 
-  if (!user) return null;
+  if (!user) return null; // Don't render the component if the user is not found
 
   return (
     <Box py={6}>

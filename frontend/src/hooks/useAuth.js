@@ -1,29 +1,28 @@
-import { useState } from "react";
+// src/hooks/useAuth.js
+import { useState, useEffect } from "react";
 
-// Util to get token from storage (so it works on refresh)
-function getInitialToken() {
-  return localStorage.getItem("token");
-}
-
+// Custom hook to manage auth state
 export function useAuth() {
-  const [token, setToken] = useState(getInitialToken());
+  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null);
 
-  // Call this on successful login
-  const login = (newToken) => {
-    localStorage.setItem("token", newToken);
-    setToken(newToken);
-  };
+  useEffect(() => {
+    const storedToken = sessionStorage.getItem("token");
+    const storedUser = sessionStorage.getItem("user");
 
-  // Call this to logout user
+    if (storedToken && storedUser) {
+      setToken(storedToken);
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   const logout = () => {
-    localStorage.removeItem("token");
+    // Clear the sessionStorage and reset state
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
     setToken(null);
+    setUser(null);
   };
 
-  // Returns true if logged in
-  const isAuthenticated = !!token;
-
-  // You can expand this later (e.g., decode JWT for user info)
-
-  return { token, login, logout, isAuthenticated };
+  return { token, user, setToken, setUser, logout }; // Return logout function
 }
