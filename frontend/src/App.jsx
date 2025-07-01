@@ -4,17 +4,21 @@ import Login from "./pages/login";
 import Signup from "./pages/signup";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/profile";
+import BankAccount from "./pages/BankAccount";
 import Navbar from "./components/Navbar";
 import PrivateRoute from "./components/PrivateRoute";
+import { useAuth } from "./hooks/useAuth";
 
 export default function App() {
+   const { token } = useAuth();
   return (
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
+         <Route path="/" element={<Navigate to={token ? "/dashboard" : "/login"} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/profile/bank-account" element={<BankAccount />} />
 
         {/* Private routes */}
         <Route

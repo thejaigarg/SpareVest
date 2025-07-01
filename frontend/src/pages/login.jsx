@@ -1,5 +1,6 @@
 // src/pages/login.jsx
 import React, { useState } from "react";
+import { useEffect } from "react";
 import { TextField, Button, Box, Typography, Alert, CircularProgress } from "@mui/material";
 import { login as loginApi } from "../api/auth";
 import { useAuth } from "../hooks/useAuth";
@@ -12,8 +13,14 @@ export default function Login() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const { login } = useAuth();
+  const { login, token } = useAuth();
   const navigate = useNavigate(); // <-- Create navigate
+
+  useEffect(() => {
+  if (token) {
+    navigate("/dashboard");
+  }
+}, [token, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,15 +29,14 @@ export default function Login() {
     setLoading(true);
     try {
       const data = await loginApi(email, password);
-      login(data.access_token);
+      login(data.access_token, data.user); // Pass both token and user
       setSuccess(true);
-      navigate("/dashboard"); // <-- Redirect after success
+      navigate("/dashboard");
     } catch (err) {
       setError(err?.response?.data?.detail || "Login failed");
     }
     setLoading(false);
-  };
-
+};
   return (
     <Box
       maxWidth={400}

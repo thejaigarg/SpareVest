@@ -36,9 +36,8 @@ export default function Signup() {
     setLoading(true);
     try {
       await signupApi({ email, full_name: fullName, password });
-      // Auto-login after signup (since signup does not return a token)
       const loginData = await loginApi(email, password);
-      login(loginData.access_token); // Save token in context/localStorage
+      login(loginData.access_token, loginData.user); // Pass both token and user
       setSuccess(true);
       navigate("/dashboard");
     } catch (err) {

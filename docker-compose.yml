@@ -6,7 +6,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8888:8000"
+      - "8000:8000"
     volumes:
       - ./backend:/app
     env_file:
@@ -22,4 +22,4 @@ services:
     volumes:
       - ./frontend:/app
     ports:
-      - "8080:80"
+      - "80:80"

@@ -13,10 +13,6 @@ export async function login(email, password) {
   });
 
   const { access_token, token_type } = response.data;
-  
-  // Store token in sessionStorage
-  sessionStorage.setItem("token", access_token);
-  sessionStorage.setItem("token_type", token_type);
 
   // Fetch current user details using the token
   const userResponse = await axios.get(`${API_BASE_URL}/users/me`, {
@@ -24,9 +20,6 @@ export async function login(email, password) {
   });
 
   const userData = userResponse.data;
-
-  // Store the current user in sessionStorage
-  sessionStorage.setItem("user", JSON.stringify(userData));
 
   return { access_token, user: userData };
 }
