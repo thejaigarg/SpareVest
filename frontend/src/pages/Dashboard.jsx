@@ -1,40 +1,26 @@
 // src/components/Dashboard.jsx
-import React, { useEffect, useState } from "react";
-import { Box, Typography, Button, CircularProgress } from "@mui/material";
+import React from "react";
+import { Box, Typography, Button, CircularProgress, Alert } from "@mui/material";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useBankAccounts } from "../hooks/useBankAccounts";
 
 export default function Dashboard() {
   const { token, user } = useAuth();
   const navigate = useNavigate();
+  const { accounts, loading, error, refresh } = useBankAccounts(token);
 
-  // Derive hasBankAccount straight from your context user object
-  const hasBankAccount = Array.isArray(user?.bankAccounts) && user.bankAccounts.length > 0;
+  // guard: not authenticated
+  if (!token) {
+    return (
+      <Box p={4}>
+        <Alert severity="warning">Please log in to view your dashboard.</Alert>
+      </Box>
+    );
+  }
 
-  const [loadingTx, setLoadingTx] = useState(true);
-  const [transactions, setTransactions] = useState([]);
-
-  useEffect(() => {
-    if (!token || !hasBankAccount) {
-      setLoadingTx(false);
-      return;
-    }
-
-    const api = axios.create({
-      baseURL: process.env.REACT_APP_API_URL,
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    api
-      .get("/transactions")
-      .then(res => setTransactions(res.data))
-      .catch(err => console.error("Error fetching transactions:", err))
-      .finally(() => setLoadingTx(false));
-  }, [token, hasBankAccount]);
-
-  // If you want to show a spinner while tx are loading…
-  if (loadingTx) {
+  // loading bank accounts
+  if (loading) {
     return (
       <Box display="flex" justifyContent="center" mt={8}>
         <CircularProgress />
@@ -42,10 +28,28 @@ export default function Dashboard() {
     );
   }
 
+  // error fetching banks
+  if (error) {
+    return (
+      <Box p={4}>
+        <Alert severity="error">
+          Error loading bank accounts: {error}
+          <Box mt={2}>
+            <Button variant="outlined" onClick={refresh}>
+              Retry
+            </Button>
+          </Box>
+        </Alert>
+      </Box>
+    );
+  }
+
+  const hasBankAccount = Array.isArray(accounts) && accounts.length > 0;
+
   return (
     <Box p={4}>
       <Typography variant="h4" gutterBottom>
-        Welcome back, {user?.firstName || "there"}!
+        Welcome back, {user?.full_name || "there"}!
       </Typography>
 
       {!hasBankAccount ? (
@@ -62,46 +66,19 @@ export default function Dashboard() {
           </Button>
         </Box>
       ) : (
-        <Box>
-          {/* — Your Figma‐inspired header here — */}
-          <Box textAlign="center" mb={4}>
-            <Typography variant="h2">${user.totalBalance.toFixed(2)}</Typography>
-            <Typography color="textSecondary">Total Balance</Typography>
-            {/* progress bar, “Add Transaction” & “Transfer Now” buttons… */}
-          </Box>
-
-          {/* Recent Transactions */}
-          <Box mt={6}>
-            <Typography variant="h6" gutterBottom>
-              Recent Transactions
-            </Typography>
-            {transactions.length === 0 ? (
-              <Typography color="textSecondary">No transactions yet.</Typography>
-            ) : (
-              transactions.map(tx => (
-                <Box
-                  key={tx.id}
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  p={2}
-                  mb={1}
-                  bgcolor="#fff"
-                  borderRadius={2}
-                  boxShadow={1}
-                >
-                  <Box>
-                    <Typography>{tx.merchantName}</Typography>
-                    <Typography variant="caption" color="textSecondary">
-                      {new Date(tx.timestamp).toLocaleString()}
-                    </Typography>
-                  </Box>
-                  <Typography color="success.main">
-                    +${tx.amount.toFixed(2)}
-                  </Typography>
-                </Box>
-              ))
-            )}
+        <Box textAlign="center" my={6}>
+          <Typography variant="h6">
+            You have {accounts.length} linked bank{" "}
+            {accounts.length === 1 ? "account" : "accounts"}.
+          </Typography>
+          <Box mt={4}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate("/profile/bank-account")}
+            >
+              Manage Bank Accounts
+            </Button>
           </Box>
         </Box>
       )}

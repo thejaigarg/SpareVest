@@ -1,28 +1,41 @@
-// src/hooks/useAuth.js
-import React, { createContext, useContext, useState } from "react";
+// src/hooks/useAuth.jsx
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { login as apiLogin, getCurrentUser } from "../api/auth";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  // Synchronously initialize from sessionStorage
-  const [token, setToken] = useState(() => {
-    return sessionStorage.getItem("token");
-  });
+  const [token, setToken] = useState(() => sessionStorage.getItem("token"));
   const [user, setUser] = useState(() => {
     const raw = sessionStorage.getItem("user");
     return raw ? JSON.parse(raw) : null;
   });
 
-  const login = (newToken, newUser) => {
-    sessionStorage.setItem("token", newToken);
-    sessionStorage.setItem("user", JSON.stringify(newUser));
-    setToken(newToken);
-    setUser(newUser);
+  // Refresh user profile when token changes
+  useEffect(() => {
+    if (!token) return;
+    getCurrentUser(token)
+      .then(u => {
+        setUser(u);
+        sessionStorage.setItem("user", JSON.stringify(u));
+      })
+      .catch(() => {
+        sessionStorage.clear();
+        setToken(null);
+        setUser(null);
+      });
+  }, [token]);
+
+  const login = async (email, password) => {
+    const { access_token, user: u } = await apiLogin(email, password);
+    sessionStorage.setItem("token", access_token);
+    sessionStorage.setItem("user", JSON.stringify(u));
+    setToken(access_token);
+    setUser(u);
   };
 
   const logout = () => {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("user");
+    sessionStorage.clear();
     setToken(null);
     setUser(null);
   };

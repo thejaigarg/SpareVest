@@ -1,73 +1,86 @@
 // src/pages/BankAccount.jsx
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-  Box,
-  Typography,
-  CircularProgress,
-  List,
-  ListItem,
+  Box, Typography, List, ListItem, ListItemText, Divider,
+  CircularProgress, Alert, TextField, Button
 } from "@mui/material";
 import { useAuth } from "../hooks/useAuth";
-import axios from "axios";
+import { createBankAccount } from "../api/bankAccount";
+import { useBankAccounts } from "../hooks/useBankAccounts";
 
 export default function BankAccount() {
   const { token } = useAuth();
-  const [accounts, setAccounts] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const { accounts, loading, error, refresh } = useBankAccounts(token);
+  const [form, setForm] = useState({ bank_name: "", account_number: "" });
+  const [submitError, setSubmitError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (!token) {
-      setError("No auth token");
-      setLoading(false);
-      return;
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setSubmitError("");
+    setSubmitting(true);
+    try {
+      await createBankAccount(token, form);
+      setForm({ bank_name: "", account_number: "" });
+      refresh();
+    } catch (err) {
+      setSubmitError(err.response?.data?.detail || err.message);
+    } finally {
+      setSubmitting(false);
     }
+  };
 
-    const fetchAccounts = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/bank-accounts/", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setAccounts(response.data);
-      } catch (err) {
-        setError(err.response?.data?.detail || "Failed to fetch bank accounts");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAccounts();
-  }, [token]);
+  if (!token) {
+    return <Alert severity="warning">Please log in.</Alert>;
+  }
+  if (loading) {
+    return <CircularProgress sx={{ mt: 8 }} />;
+  }
 
   return (
     <Box p={4} maxWidth={600} mx="auto">
       <Typography variant="h4" gutterBottom>
         Your Bank Accounts
       </Typography>
-
-      {loading ? (
-        <Box display="flex" justifyContent="center" mt={4}>
-          <CircularProgress />
-        </Box>
-      ) : error ? (
-        <Typography color="error" mb={2}>
-          Error: {error}
-        </Typography>
-      ) : !Array.isArray(accounts) ? (
-        <Typography>No data to display.</Typography>
-      ) : accounts.length === 0 ? (
-        <Typography>You have no bank accounts.</Typography>
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {accounts.length === 0 ? (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          No bank accounts on file.
+        </Alert>
       ) : (
-        <List>
-          {accounts.map((acct) => (
-            <ListItem key={acct.id}>
-              {acct.bank_name} ••••{acct.account_number.slice(-4)}
-            </ListItem>
+        <List disablePadding sx={{ mb: 4 }}>
+          {accounts.map(a => (
+            <React.Fragment key={a.id}>
+              <ListItem>
+                <ListItemText
+                  primary={a.bank_name}
+                  secondary={`•••• ${a.account_number.slice(-4)}`}
+                />
+              </ListItem>
+              <Divider component="li" />
+            </React.Fragment>
           ))}
         </List>
       )}
+      <Box component="form" onSubmit={handleSubmit} display="flex" flexDirection="column" gap={2}>
+        <Typography variant="h6">Link a New Bank Account</Typography>
+        {submitError && <Alert severity="error">{submitError}</Alert>}
+        <TextField
+          label="Bank Name"
+          value={form.bank_name}
+          onChange={e => setForm(f => ({ ...f, bank_name: e.target.value }))}
+          required
+        />
+        <TextField
+          label="Account Number"
+          value={form.account_number}
+          onChange={e => setForm(f => ({ ...f, account_number: e.target.value }))}
+          required
+        />
+        <Button type="submit" variant="contained" disabled={submitting}>
+          {submitting ? "Linking…" : "Link Account"}
+        </Button>
+      </Box>
     </Box>
   );
 }
