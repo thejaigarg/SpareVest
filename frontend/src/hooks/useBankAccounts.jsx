@@ -1,70 +1,32 @@
 // src/hooks/useBankAccounts.js
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { listBankAccounts } from "../api/bankAccount";
+import { useAuth } from "./useAuth";
 
-let cache = null;
-let errorCache = "";
-let loading = false;
-let subscribers = [];
-
-function notify() {
-  subscribers.forEach(cb => cb({ accounts: cache, loading, error: errorCache }));
-}
-
-export function useBankAccounts(token) {
+export function useBankAccounts() {
+  const { token } = useAuth();
   const [state, setState] = useState({
-    accounts: cache,
-    loading: token && cache === null,
-    error: errorCache,
+    accounts: null,
+    loading: !!token,
+    error: null,
   });
 
-  useEffect(() => {
-    const cb = newState => setState(newState);
-    subscribers.push(cb);
-
-    if (cache === null && token && !loading) {
-      loading = true;
-      notify();
-      listBankAccounts(token)
-        .then(list => {
-          cache = list;
-          errorCache = "";
-        })
-        .catch(err => {
-          cache = [];
-          errorCache = err.message || "Failed to load";
-        })
-        .finally(() => {
-          loading = false;
-          notify();
-        });
-    } else {
-      notify();
-    }
-
-    return () => {
-      subscribers = subscribers.filter(fn => fn !== cb);
-    };
+  const fetchAccounts = useCallback(() => {
+    if (!token) return;
+    setState(s => ({ ...s, loading: true, error: null }));
+    listBankAccounts()
+      .then(accounts => setState({ accounts, loading: false, error: null }))
+      .catch(err => setState({ accounts: [], loading: false, error: err.message }));
   }, [token]);
 
-  const refresh = () => {
-    if (!token) return;
-    loading = true;
-    notify();
-    listBankAccounts(token)
-      .then(list => {
-        cache = list;
-        errorCache = "";
-      })
-      .catch(err => {
-        cache = [];
-        errorCache = err.message || "Failed to load";
-      })
-      .finally(() => {
-        loading = false;
-        notify();
-      });
-  };
+  useEffect(() => {
+    fetchAccounts();
+  }, [fetchAccounts]);
 
-  return { ...state, refresh };
+  return { 
+    accounts: state.accounts, 
+    loading: state.loading, 
+    error: state.error, 
+    refresh: fetchAccounts 
+  };
 }

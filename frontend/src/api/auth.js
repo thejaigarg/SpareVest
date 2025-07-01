@@ -1,47 +1,29 @@
 // src/api/auth.js
-import axios from "axios";
-import { API_BASE_URL } from "../constants/appConfig";
+import API, { setAuthToken } from "./client";
 
-// Backend expects: POST /auth/token with form data (username, password)
+// login → { access_token, user }
 export async function login(email, password) {
   const params = new URLSearchParams();
   params.append("username", email);
   params.append("password", password);
 
-  const response = await axios.post(`${API_BASE_URL}/auth/token`, params, {
+  const { access_token } = await API.post("/auth/token", params, {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
-  });
+  }).then(r => r.data);
 
-  const { access_token, token_type } = response.data;
-
-  // Fetch current user details using the token
-  const userResponse = await axios.get(`${API_BASE_URL}/users/me`, {
-    headers: { Authorization: `Bearer ${access_token}` },
-  });
-
-  const userData = userResponse.data;
-
-  return { access_token, user: userData };
+  setAuthToken(access_token);
+  const user = await API.get("/users/me").then(r => r.data);
+  return { access_token, user };
 }
 
-// Registers a new user
-export async function signup({ email, full_name, password }) {
-  const response = await axios.post(`${API_BASE_URL}/users/`, {
-    email,
-    full_name,
-    password,
-  });
-  return response.data;
+export function getCurrentUser() {
+  return API.get("/users/me").then(r => r.data);
 }
 
-export async function getCurrentUser(token) {
-  const response = await axios.get(`${API_BASE_URL}/users/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return response.data; // { email, full_name, id, is_active }
+export async function signup(details) {
+  return API.post("/users/", details).then(r => r.data);
 }
 
 export async function requestPasswordReset(email) {
-  const response = await axios.post(`${API_BASE_URL}/auth/password-reset/request`, { email });
-  return response.data;
+  return API.post("/auth/password-reset", { email }).then(r => r.data);
 }

@@ -1,28 +1,26 @@
 // src/hooks/useAuth.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { login as apiLogin, getCurrentUser } from "../api/auth";
-
+import { setAuthToken } from "../api/client";
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => sessionStorage.getItem("token"));
-  const [user, setUser] = useState(() => {
+  const [user,  setUser ] = useState(() => {
     const raw = sessionStorage.getItem("user");
     return raw ? JSON.parse(raw) : null;
   });
 
-  // Refresh user profile when token changes
   useEffect(() => {
     if (!token) return;
-    getCurrentUser(token)
+    setAuthToken(token);
+    getCurrentUser()
       .then(u => {
         setUser(u);
         sessionStorage.setItem("user", JSON.stringify(u));
       })
       .catch(() => {
-        sessionStorage.clear();
-        setToken(null);
-        setUser(null);
+        logout();
       });
   }, [token]);
 
@@ -35,6 +33,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
+    setAuthToken(null);
     sessionStorage.clear();
     setToken(null);
     setUser(null);

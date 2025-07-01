@@ -1,28 +1,12 @@
-import axios from "axios";
-import { API_BASE_URL } from "../constants/appConfig";
+// src/api/bankAccount.js
+import API from "./client";
 
-function client(token) {
-  return axios.create({
-    baseURL: API_BASE_URL,
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export async function listBankAccounts() {
+  return API.get("/bank-accounts")
+    .then(r => (Array.isArray(r.data) ? r.data : []));
 }
 
-/**
- * GET /bank-accounts → list of BankAccountInDB
- */
-export async function listBankAccounts(token) {
-  const res = await client(token).get("/bank-accounts");
-  return Array.isArray(res.data) ? res.data : [];
-}
-
-/**
- * POST /bank-accounts with { bank_name, account_number }
- */
-export async function createBankAccount(token, { bank_name, account_number }) {
-  const res = await client(token).post("/bank-accounts", {
-    bank_name,
-    account_number,
-  });
-  return res.data;
+export async function createBankAccount({ bank_name, account_number }) {
+  return API.post("/bank-accounts", { bank_name, account_number })
+    .then(r => r.data);
 }
