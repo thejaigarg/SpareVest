@@ -1,4 +1,4 @@
-// src/components/Dashboard.jsx
+// src/pages/Dashboard.jsx
 import React from "react";
 import { Box, Typography, Button, CircularProgress, Alert } from "@mui/material";
 import { useAuth } from "../hooks/useAuth";
@@ -8,18 +8,18 @@ import { useBankAccounts } from "../hooks/useBankAccounts";
 export default function Dashboard() {
   const { token, user } = useAuth();
   const navigate = useNavigate();
-  const { accounts, loading, error, refresh } = useBankAccounts(token);
+  const { accounts = [], loading, error, refresh } = useBankAccounts();
 
-  // guard: not authenticated
   if (!token) {
     return (
       <Box p={4}>
-        <Alert severity="warning">Please log in to view your dashboard.</Alert>
+        <Alert severity="warning">
+          Please log in to view your dashboard.
+        </Alert>
       </Box>
     );
   }
 
-  // loading bank accounts
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" mt={8}>
@@ -28,7 +28,6 @@ export default function Dashboard() {
     );
   }
 
-  // error fetching banks
   if (error) {
     return (
       <Box p={4}>
@@ -49,7 +48,7 @@ export default function Dashboard() {
   return (
     <Box p={4}>
       <Typography variant="h4" gutterBottom>
-        Welcome back, {user?.full_name || "there"}!
+        Welcome back, {user?.full_name || user?.email || "there"}!
       </Typography>
 
       {!hasBankAccount ? (
@@ -65,23 +64,7 @@ export default function Dashboard() {
             Add Bank Account
           </Button>
         </Box>
-      ) : (
-        <Box textAlign="center" my={6}>
-          <Typography variant="h6">
-            You have {accounts.length} linked bank{" "}
-            {accounts.length === 1 ? "account" : "accounts"}.
-          </Typography>
-          <Box mt={4}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => navigate("/profile/bank-account")}
-            >
-              Manage Bank Accounts
-            </Button>
-          </Box>
-        </Box>
-      )}
+      ) : null}
     </Box>
   );
 }
