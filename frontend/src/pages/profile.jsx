@@ -3,11 +3,15 @@ import React, { useState } from "react";
 import { Container, Typography, Button, Alert, Box } from "@mui/material";
 import { requestPasswordReset } from "../api/auth";
 import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
-  const { token, user, setUser } = useAuth(); // Use the token and user from useAuth hook
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError]     = useState("");
+
+  if (!user) return null;
 
   const handlePasswordReset = async () => {
     setMessage("");
@@ -15,24 +19,43 @@ export default function Profile() {
     try {
       await requestPasswordReset(user.email);
       setMessage("If your email exists, a reset link has been sent.");
-    } catch (err) {
+    } catch {
       setError("Error sending reset email.");
     }
   };
 
-  if (!user) return null; // Don't render the component if the user is not found
-
   return (
     <Box py={6}>
       <Container maxWidth="sm">
-        <Typography variant="h5" gutterBottom>Profile</Typography>
+        <Typography variant="h5" gutterBottom>
+          Profile
+        </Typography>
         <Typography>Email: {user.email}</Typography>
         <Typography>Name: {user.full_name}</Typography>
-        <Button variant="outlined" sx={{ mt: 2 }} onClick={handlePasswordReset}>
-          Request Password Reset
-        </Button>
-        {message && <Alert severity="success" sx={{ mt: 2 }}>{message}</Alert>}
-        {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+
+        <Box mt={4} display="flex" gap={2}>
+          <Button variant="outlined" onClick={handlePasswordReset}>
+            Request Password Reset
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/profile/bank-account")}
+          >
+            Manage Bank Accounts
+          </Button>
+        </Box>
+
+        {message && (
+          <Alert severity="success" sx={{ mt: 2 }}>
+            {message}
+          </Alert>
+        )}
+        {error && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {error}
+          </Alert>
+        )}
       </Container>
     </Box>
   );

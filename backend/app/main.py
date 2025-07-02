@@ -10,7 +10,8 @@ from app.api import transactions as transctions
 
 app = FastAPI()
 origins = [
-    "http://localhost:8080",  # Vite dev server
+    "http://localhost:80",  # Vite dev server
+    "http://localhost",
     # Add others as needed, e.g. "http://localhost:3000",
 ]
 
