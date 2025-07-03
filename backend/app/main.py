@@ -1,20 +1,37 @@
 # backend/app/main.py
-# backend/app/main.py
 
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse
+
 from app.api import user as user_router
 from app.api import auth as auth_router
 from app.api import bank_account as bank_account_router
 from app.api import transactions as transctions
+from dotenv import load_dotenv
+load_dotenv() 
 
 app = FastAPI()
-origins = [
-    "http://localhost:80",  # Vite dev server
-    "http://localhost",
-    # Add others as needed, e.g. "http://localhost:3000",
-]
 
+# Health-check endpoint
+@app.get("/healthz")
+async def healthz():
+    return JSONResponse({"status": "ok"})
+
+# Root endpoint
+@app.get("/")
+async def root():
+    return {"message": "Welcome to the SpareVest API"}
+
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:80")
+# CORS configuration
+origins = [
+    "http://localhost:80",
+    "http://localhost",
+    FRONTEND_URL
+]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -22,6 +39,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Your API routers
 app.include_router(user_router.router)
 app.include_router(auth_router.router)
 app.include_router(bank_account_router.router)
