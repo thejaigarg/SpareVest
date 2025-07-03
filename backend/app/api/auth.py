@@ -12,10 +12,7 @@ from app.core.security import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, 
 from app.crud.user import authenticate_user, get_user_by_email, update_user_password
 from app.core.email import send_reset_email
 from app.schemas.user import UserInDB, PasswordResetRequest, PasswordResetConfirm
-
-from dotenv import load_dotenv
-load_dotenv() 
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:80")
+from core.config import FRONTEND_URL
 
 router = APIRouter(tags=["auth"])
 

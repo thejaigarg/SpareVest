@@ -1,16 +1,16 @@
 # app/core/email.py
-
 import os
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
 import aiosmtplib
-
-load_dotenv()
-
+from app.core.config import (
+    GMAIL_USER,
+    GMAIL_PASS,
+)
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-SMTP_USER = os.getenv("GMAIL_USER")
-SMTP_PASS = os.getenv("GMAIL_PASS")
+SMTP_USER = GMAIL_USER
+SMTP_PASS = GMAIL_PASS
 
 async def send_reset_email(to_email: str, reset_link: str):
     subject = "Your Password Reset Link"
