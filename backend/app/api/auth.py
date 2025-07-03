@@ -13,6 +13,8 @@ from app.crud.user import authenticate_user, get_user_by_email, update_user_pass
 from app.core.email import send_reset_email
 from app.schemas.user import UserInDB, PasswordResetRequest, PasswordResetConfirm
 
+from dotenv import load_dotenv
+load_dotenv() 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:80")
 
 router = APIRouter(tags=["auth"])
