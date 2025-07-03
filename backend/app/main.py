@@ -10,8 +10,7 @@ from app.api import user as user_router
 from app.api import auth as auth_router
 from app.api import bank_account as bank_account_router
 from app.api import transactions as transctions
-from dotenv import load_dotenv
-load_dotenv() 
+from app.core.config import FRONTEND_URL
 
 app = FastAPI()
 
@@ -25,7 +24,6 @@ async def healthz():
 async def root():
     return {"message": "Welcome to the SpareVest API"}
 
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:80")
 # CORS configuration
 origins = [
     "http://localhost:80",

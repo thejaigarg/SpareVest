@@ -4,15 +4,15 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 import os
 from alembic import context
-from dotenv import load_dotenv
-load_dotenv()
+from app.core.config import DATABASE_URL
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
 # Set the actual DB URL (from env/ dotenv) manually!
-db_url = os.getenv("DATABASE_URL")
+db_url = DATABASE_URL
 if not db_url:
     raise Exception("DATABASE_URL is not set in env or .env")
 config.set_main_option("sqlalchemy.url", db_url)
