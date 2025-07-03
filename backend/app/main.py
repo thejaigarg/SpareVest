@@ -20,11 +20,6 @@ app = FastAPI()
 async def healthz():
     return JSONResponse({"status": "ok"})
 
-# Favicon endpoint
-@app.get("/favicon.ico", include_in_schema=False)
-async def favicon():
-    return FileResponse("app/favicon.ico")
-
 # Root endpoint
 @app.get("/")
 async def root():

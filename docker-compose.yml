@@ -10,7 +10,7 @@ services:
     volumes:
       - ./backend:/app
     env_file:
-      - .env
+      - ./backend/.env
     environment:
       - PYTHONDONTWRITEBYTECODE=1
       - PYTHONUNBUFFERED=1
@@ -23,3 +23,5 @@ services:
       - ./frontend:/app
     ports:
       - "80:80"
+    env_file:
+      - ./frontend/.env

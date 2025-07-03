@@ -1,8 +1,9 @@
 // src/api/client.js
 import axios from "axios";
+import { API_BASE_URL } from "../constants/appConfig";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080",
+  baseURL: API_BASE_URL,
 });
 
 export function setAuthToken(token) {
@@ -14,3 +15,4 @@ export function setAuthToken(token) {
 }
 
 export default API;
+
