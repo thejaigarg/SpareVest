@@ -8,6 +8,8 @@ import BankAccount from "./pages/BankAccount";
 import Navbar from "./components/Navbar";
 import PrivateRoute from "./components/PrivateRoute";
 import { useAuth } from "./hooks/useAuth";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 export default function App() {
    const { token } = useAuth();
@@ -18,6 +20,8 @@ export default function App() {
          <Route path="/" element={<Navigate to={token ? "/dashboard" : "/login"} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/profile/bank-account" element={<BankAccount />} />
 
         {/* Private routes */}
