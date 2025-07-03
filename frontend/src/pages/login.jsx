@@ -91,6 +91,11 @@ export default function Login() {
           Don&apos;t have an account? <a href="/signup">Sign up</a>
         </Typography>
       </Box>
+      <Box mt={1} textAlign="center">
+        <Typography variant="body2">
+          <a href="/forgot-password">Forgot password?</a>
+        </Typography>
+      </Box>
     </Box>
   );
 }

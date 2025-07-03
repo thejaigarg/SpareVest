@@ -25,5 +25,11 @@ export async function signup(details) {
 }
 
 export async function requestPasswordReset(email) {
-  return API.post("/auth/password-reset", { email }).then(r => r.data);
+  return API.post("/auth/password-reset/request", { email }).then(r => r.data);
+}
+
+// Reset password
+
+export function resetPassword({ token, new_password }) {
+  return API.post("/auth/password-reset/confirm", { token, new_password });
 }
