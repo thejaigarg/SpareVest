@@ -1,13 +1,22 @@
 import React, { useState } from "react";
-import { TextField, Button, Box, Typography, Alert, CircularProgress } from "@mui/material";
+import { MenuItem, TextField, Button, Box, Typography, Alert, CircularProgress } from "@mui/material";
 import { signup as signupApi, login as loginApi } from "../api/auth";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
+
+  const SUPPORTED_CURRENCIES = [
+    { code: "USD", label: "US Dollar" },
+    { code: "INR", label: "Indian Rupee" },
+    { code: "EUR", label: "Euro" },
+    { code: "GBP", label: "British Pound" }
+  ];
+
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
+  const [currency, setCurrency] = useState("USD");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -35,9 +44,9 @@ export default function Signup() {
     }
     setLoading(true);
     try {
-      await signupApi({ email, full_name: fullName, password });
+      await signupApi({ email, full_name: fullName, password, currency });
       const loginData = await loginApi(email, password);
-      login(loginData.access_token, loginData.user); // Pass both token and user
+      login(loginData.access_token); // Save token in context/localStorage
       setSuccess(true);
       navigate("/dashboard");
     } catch (err) {
@@ -88,6 +97,21 @@ export default function Signup() {
           margin="normal"
           required
         />
+        <TextField
+          select
+          label="Currency"
+          value={currency}
+          onChange={e => setCurrency(e.target.value)}
+          fullWidth
+          margin="normal"
+          required
+        >
+          {SUPPORTED_CURRENCIES.map(option => (
+            <MenuItem key={option.code} value={option.code}>
+              {option.code} — {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
         <Button
           type="submit"
           variant="contained"

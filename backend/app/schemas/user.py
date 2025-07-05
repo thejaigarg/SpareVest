@@ -7,11 +7,15 @@ class UserClass(BaseModel):
 
 class UserCreate(UserClass):
     password: str
+    currency: str
 
 class UserInDB(UserClass):
     id: int
     is_active: bool
     role: str
+    currency: str
+    savings_goal: float
+    sparevest_balance: float
 
     class Config:
         from_attributes = True
