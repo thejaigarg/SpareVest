@@ -1,8 +1,8 @@
-"""Transction tables
+"""initial setup
 
-Revision ID: 5394bbc7eb99
-Revises: d6673851b6b4
-Create Date: 2025-06-26 00:28:08.034702
+Revision ID: 8f125caefc43
+Revises: 
+Create Date: 2025-07-05 07:45:22.896325
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '5394bbc7eb99'
-down_revision: Union[str, Sequence[str], None] = 'd6673851b6b4'
+revision: str = '8f125caefc43'
+down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -38,8 +38,12 @@ def upgrade() -> None:
     sa.Column('bank_name', sa.String(), nullable=False),
     sa.Column('account_number', sa.String(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('currency', sa.String(length=3), nullable=False),
+    sa.Column('balance', sa.Float(), nullable=True),
+    sa.Column('is_default', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('account_number')
     )
     op.create_index(op.f('ix_bank_accounts_id'), 'bank_accounts', ['id'], unique=False)
     op.create_table('transactions',
