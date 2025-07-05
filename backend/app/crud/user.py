@@ -19,6 +19,9 @@ def create_user(db: Session, user: UserCreate):
         hashed_password=hashed_pw,
         full_name=user.full_name,
         is_active=1,
+        currency=user.currency,
+        savings_goal = 100.0,
+        sparevest_balance = 0.0
     )
     db.add(db_user)
     db.commit()
