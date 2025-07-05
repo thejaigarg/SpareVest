@@ -6,10 +6,10 @@ export async function listBankAccounts() {
     .then(r => (Array.isArray(r.data) ? r.data : []));
 }
 
-export async function createBankAccount(token, { bank_name, account_number }) {
+export async function createBankAccount(token, { bank_name, account_number, currency }) {
   return API.post(
     "/bank-accounts", 
-    { bank_name, account_number },
+    { bank_name, account_number, currency },
     {
       headers: {
         Authorization: `Bearer ${token}`

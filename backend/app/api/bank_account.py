@@ -17,6 +17,11 @@ def link_bank_account(
     db: Session = Depends(get_db), 
     current_user = Depends(get_current_user)
 ):
+    if bank.currency != current_user.currency:
+        raise HTTPException(
+            status_code = 400,
+            detail=f"Bank account currency must amtch your profile currency ({current_user.currency})."
+        )
     return crud_bank.create_bank_account(db, user_id=current_user.id, bank=bank)
 
 @router.get("/", response_model=list[BankAccountInDB])

@@ -2,16 +2,23 @@
 import React, { useState } from "react";
 import {
   Box, Typography, List, ListItem, ListItemText, Divider,
-  CircularProgress, Alert, TextField, Button
+  CircularProgress, Alert, TextField, Button, MenuItem
 } from "@mui/material";
 import { useAuth } from "../hooks/useAuth";
 import { createBankAccount } from "../api/bankAccount";
 import { useBankAccounts } from "../hooks/useBankAccounts";
 
 export default function BankAccount() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const allowedCurrency = user?.currency || "USD";
   const { accounts, loading, error, refresh } = useBankAccounts(token);
-  const [form, setForm] = useState({ bank_name: "", account_number: "" });
+  const [form, setForm] = useState(
+    { 
+      bank_name: "", 
+      account_number: "",
+      currency: allowedCurrency,
+    }
+  );
   const [submitError, setSubmitError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -77,6 +84,17 @@ export default function BankAccount() {
           onChange={e => setForm(f => ({ ...f, account_number: e.target.value }))}
           required
         />
+        <TextField
+          select
+          label="Currency"
+          value={form.currency}
+          onChange={e => setForm(f => ({ ...f, currency: e.target.value }))}
+          required
+          margin="normal"
+          disabled  // <--- Disable for now, enable later for multi-currency
+        >
+          <MenuItem value={allowedCurrency}>{allowedCurrency}</MenuItem>
+        </TextField>
         <Button type="submit" variant="contained" disabled={submitting}>
           {submitting ? "Linking…" : "Link Account"}
         </Button>
