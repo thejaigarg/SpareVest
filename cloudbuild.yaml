@@ -1,0 +1,31 @@
+steps:
+  # 1. Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - build
+      - '-t'
+      - 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest:$SHORT_SHA'
+      - '.'
+
+  # 2. Push the image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - push
+      - 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest:$SHORT_SHA'
+
+  # 3. Deploy to Cloud Run (injecting DATABASE_URL)
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - sparevest-backend
+      - --region=northamerica-northeast2
+      - --image=northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest:$SHORT_SHA
+      - --platform=managed
+      - --allow-unauthenticated
+      - --update-secrets=DATABASE_URL=projects/$PROJECT_ID/secrets/DATABASE_URL:latest
+
+# Declare the built image for automatic cleanup & visibility
+images:
+  - 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest:$SHORT_SHA'
