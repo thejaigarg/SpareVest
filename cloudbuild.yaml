@@ -1,31 +1,98 @@
 steps:
-  # 1. Build the Docker image
+  # 1. Build backend image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - build
       - '-t'
-      - 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest:$SHORT_SHA'
-      - '.'
+      - northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest-backend:$SHORT_SHA
+      - ./backend
 
-  # 2. Push the image to Artifact Registry
+  # 3. Push backend image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - push
-      - 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest:$SHORT_SHA'
+      - northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest-backend:$SHORT_SHA
 
-  # 3. Deploy to Cloud Run (injecting DATABASE_URL)
+  # 5. Deploy backend (no FRONTEND_URL)
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: deploy-backend
     entrypoint: gcloud
     args:
       - run
       - deploy
       - sparevest-backend
       - --region=northamerica-northeast2
-      - --image=northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest:$SHORT_SHA
       - --platform=managed
+      - --image=northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest-backend:$SHORT_SHA
       - --allow-unauthenticated
-      - --update-secrets=DATABASE_URL=projects/$PROJECT_ID/secrets/DATABASE_URL:latest
+      - "--set-secrets=DATABASE_URL=projects/$PROJECT_NUMBER/secrets/DATABASE_URL:latest,TEST_DATABASE_URL=projects/$PROJECT_NUMBER/secrets/TEST_DATABASE_URL:latest,SECRET_KEY=projects/$PROJECT_NUMBER/secrets/SECRET_KEY:latest,GMAIL_PASS=projects/$PROJECT_NUMBER/secrets/GMAIL_PASS:latest,GMAIL_USER=projects/$PROJECT_NUMBER/secrets/GMAIL_USER:latest"
 
-# Declare the built image for automatic cleanup & visibility
+  # 6. Get the backend URL
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: get-backend-url
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        URL=`gcloud run services describe sparevest-backend \
+          --region=northamerica-northeast2 \
+          --format='value(status.url)'`
+        echo "BACKEND_URL=$$URL" > /workspace/backend-url.env
+
+  # 7a. Build & push frontend with the real backend URL baked in
+  - name: 'gcr.io/cloud-builders/docker'
+    id: build-and-push-frontend
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        source /workspace/backend-url.env
+        docker build \
+          --build-arg VITE_API_BASE_URL=$$BACKEND_URL \
+          -t northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest-frontend:$SHORT_SHA \
+          ./frontend
+        docker push northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest-frontend:$SHORT_SHA
+
+  # 7b. Deploy that image
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: deploy-frontend
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - sparevest-frontend
+      - --region=northamerica-northeast2
+      - --platform=managed
+      - --image=northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest-frontend:$SHORT_SHA
+      - --allow-unauthenticated
+
+  # 8. Get the frontend URL
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: get-frontend-url
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        URL=`gcloud run services describe sparevest-frontend \
+          --region=northamerica-northeast2 \
+          --format='value(status.url)'`
+        echo "FRONTEND_URL=$$URL" > /workspace/frontend-url.env
+
+  # 9. Patch backend to inject FRONTEND_URL
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: update-backend
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        source /workspace/frontend-url.env
+        gcloud run services update sparevest-backend \
+          --region=northamerica-northeast2 \
+          --update-env-vars=FRONTEND_URL=$$FRONTEND_URL
+
 images:
-  - 'northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest:$SHORT_SHA'
+  - northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest-backend:$SHORT_SHA
+  - northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest-frontend:$SHORT_SHA
+
+options:
+  logging: CLOUD_LOGGING_ONLY

@@ -11,6 +11,8 @@ RUN npm install
 # Copy the rest of the frontend code
 COPY . .
 
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 # Build the frontend for production
 RUN npm run build
 
