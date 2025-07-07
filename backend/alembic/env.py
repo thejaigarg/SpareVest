@@ -34,7 +34,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app.core.database import Base
-from app.models import user, bank_account, transaction   # Import ALL your models here
+from app.models import user, bank_account, transaction, portfolio   # Import ALL your models here
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

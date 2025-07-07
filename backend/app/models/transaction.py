@@ -11,8 +11,9 @@ class Transaction(Base):
     bank_account_id = Column(Integer, ForeignKey("bank_accounts.id"), nullable=False)
     amount = Column(Float, nullable=False)
     description = Column(String, nullable=False)
-    date = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     round_up_amount = Column(Float, nullable=False, default=0.0)
+    type = Column(String, nullable = False, default = "purchase")
 
     user = relationship("User", back_populates="transactions")
     bank_account = relationship("BankAccount", back_populates="transactions")
