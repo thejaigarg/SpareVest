@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.models.user import User
 from app.schemas.user import UserCreate
 from passlib.context import CryptContext
+from app.models.portfolio import Portfolio
 
 from app.core.security import verify_password
 
@@ -19,13 +20,21 @@ def create_user(db: Session, user: UserCreate):
         hashed_password=hashed_pw,
         full_name=user.full_name,
         is_active=1,
-        currency=user.currency,
-        savings_goal = 100.0,
-        sparevest_balance = 0.0
+        currency=user.currency
     )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+
+    db_portfolio = Portfolio(
+        user_id = db_user.id,
+        savings_goal = 100.0,
+        sparevest_balance = 0.0,
+        roundup_bucket = 0.0
+    )
+    db.add(db_portfolio)
+    db.commit()
+    db.refresh(db_portfolio)
     return db_user
 
 def get_user(db: Session, user_id: int):

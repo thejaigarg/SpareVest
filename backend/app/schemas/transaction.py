@@ -5,6 +5,7 @@ from datetime import datetime
 class TransactionBase(BaseModel):
     amount: float
     description: str
+    type: str = "purchase"
 
 class TransactionCreate(TransactionBase):
     bank_account_id: int
@@ -13,7 +14,7 @@ class TransactionInDB(TransactionBase):
     id: int
     user_id: int
     bank_account_id: int
-    date: datetime
+    created_at: datetime
     round_up_amount: float
 
     class Config:
