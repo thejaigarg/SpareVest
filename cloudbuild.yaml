@@ -7,13 +7,13 @@ steps:
       - northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest-backend:$SHORT_SHA
       - ./backend
 
-  # 3. Push backend image
+  # 2. Push backend image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - push
       - northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest-backend:$SHORT_SHA
 
-  # 5. Deploy backend (no FRONTEND_URL)
+  # 3. Deploy backend with secrets
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: deploy-backend
     entrypoint: gcloud
@@ -25,9 +25,11 @@ steps:
       - --platform=managed
       - --image=northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest-backend:$SHORT_SHA
       - --allow-unauthenticated
+      - --readiness-probe-path=/healthz
       - "--set-secrets=DATABASE_URL=projects/$PROJECT_NUMBER/secrets/DATABASE_URL:latest,TEST_DATABASE_URL=projects/$PROJECT_NUMBER/secrets/TEST_DATABASE_URL:latest,SECRET_KEY=projects/$PROJECT_NUMBER/secrets/SECRET_KEY:latest,GMAIL_PASS=projects/$PROJECT_NUMBER/secrets/GMAIL_PASS:latest,GMAIL_USER=projects/$PROJECT_NUMBER/secrets/GMAIL_USER:latest"
+      - "--set-env-vars=FRONTEND_URL=https://sparevest-frontend-67191398613.northamerica-northeast2.run.app"
 
-  # 6. Get the backend URL
+  # 4. Get the backend URL
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: get-backend-url
     entrypoint: bash
@@ -39,7 +41,7 @@ steps:
           --format='value(status.url)'`
         echo "BACKEND_URL=$$URL" > /workspace/backend-url.env
 
-  # 7a. Build & push frontend with the real backend URL baked in
+  # 5a. Build & push frontend with the real backend URL baked in
   - name: 'gcr.io/cloud-builders/docker'
     id: build-and-push-frontend
     entrypoint: bash
@@ -53,7 +55,7 @@ steps:
           ./frontend
         docker push northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest-frontend:$SHORT_SHA
 
-  # 7b. Deploy that image
+  # 5b. Deploy that image
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: deploy-frontend
     entrypoint: gcloud
@@ -66,29 +68,29 @@ steps:
       - --image=northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest-frontend:$SHORT_SHA
       - --allow-unauthenticated
 
-  # 8. Get the frontend URL
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    id: get-frontend-url
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        URL=`gcloud run services describe sparevest-frontend \
-          --region=northamerica-northeast2 \
-          --format='value(status.url)'`
-        echo "FRONTEND_URL=$$URL" > /workspace/frontend-url.env
+  # # 8. Get the frontend URL
+  # - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  #   id: get-frontend-url
+  #   entrypoint: bash
+  #   args:
+  #     - -c
+  #     - |
+  #       URL=`gcloud run services describe sparevest-frontend \
+  #         --region=northamerica-northeast2 \
+  #         --format='value(status.url)'`
+  #       echo "FRONTEND_URL=$$URL" > /workspace/frontend-url.env
 
-  # 9. Patch backend to inject FRONTEND_URL
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    id: update-backend
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        source /workspace/frontend-url.env
-        gcloud run services update sparevest-backend \
-          --region=northamerica-northeast2 \
-          --update-env-vars=FRONTEND_URL=$$FRONTEND_URL
+  # 9. Patch backend to inject FRONTEND_URL (optional, can now be omitted)
+  # - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  #   id: update-backend
+  #   entrypoint: bash
+  #   args:
+  #     - -c
+  #     - |
+  #       source /workspace/frontend-url.env
+  #       gcloud run services update sparevest-backend \
+  #         --region=northamerica-northeast2 \
+  #         --update-env-vars=FRONTEND_URL=$$FRONTEND_URL
 
 images:
   - northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest-backend:$SHORT_SHA

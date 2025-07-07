@@ -5,11 +5,11 @@ import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const [email, setEmail]     = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState("");
-  const [success, setSuccess]   = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const { login, token } = useAuth();
   const navigate = useNavigate();
@@ -51,9 +51,37 @@ export default function Login() {
       borderRadius={2}
       bgcolor="background.paper"
     >
-      <Typography variant="h5" mb={2}>
-        Login
-      </Typography>
+
+      <Box display="flex" justifyContent="center" mb={2}>
+        <img
+          src="/logo.png"
+          alt="SpareVest Logo"
+          style={{ maxWidth: 300, height: "auto" }}
+        />
+      </Box>
+       
+      <Box display="flex" justifyContent="center" mb={1}>
+        <Typography
+  variant="h4"
+  fontWeight="bold"
+  letterSpacing={0}
+  sx={{
+    background: "linear-gradient(90deg, #06b6d4 0%,rgb(6, 183, 124) 100%)", // cyan to sea green
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
+    textFillColor: "transparent",
+    textShadow: "0 2px 8px rgba(0,0,0,0.08)",
+    fontFamily: "Montserrat, Roboto, Arial, sans-serif",
+    fontWeight: 900,
+    fontSize: { xs: "2.2rem", md: "2.8rem" },
+  }}
+>
+  SpareVest
+</Typography>
+
+      </Box>
+
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       {success && <Alert severity="success" sx={{ mb: 2 }}>Login successful!</Alert>}
       <form onSubmit={handleSubmit}>
