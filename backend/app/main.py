@@ -11,6 +11,7 @@ from app.api import auth as auth_router
 from app.api import bank_account as bank_account_router
 from app.api import transactions as transctions
 from app.core.config import FRONTEND_URL
+from app.api import portfolio as portfolio_router
 
 app = FastAPI()
 
@@ -37,3 +38,4 @@ app.include_router(user_router.router)
 app.include_router(auth_router.router)
 app.include_router(bank_account_router.router)
 app.include_router(transctions.router)
+app.include_router(portfolio_router.router)
