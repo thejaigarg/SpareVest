@@ -14,8 +14,6 @@ class UserInDB(UserClass):
     is_active: bool
     role: str
     currency: str
-    savings_goal: float
-    sparevest_balance: float
 
     class Config:
         from_attributes = True
