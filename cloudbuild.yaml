@@ -25,7 +25,6 @@ steps:
       - --platform=managed
       - --image=northamerica-northeast2-docker.pkg.dev/$PROJECT_ID/sparevest/sparevest-backend:$SHORT_SHA
       - --allow-unauthenticated
-      - --readiness-probe-path=/healthz
       - "--set-secrets=DATABASE_URL=projects/$PROJECT_NUMBER/secrets/DATABASE_URL:latest,TEST_DATABASE_URL=projects/$PROJECT_NUMBER/secrets/TEST_DATABASE_URL:latest,SECRET_KEY=projects/$PROJECT_NUMBER/secrets/SECRET_KEY:latest,GMAIL_PASS=projects/$PROJECT_NUMBER/secrets/GMAIL_PASS:latest,GMAIL_USER=projects/$PROJECT_NUMBER/secrets/GMAIL_USER:latest"
       - "--set-env-vars=FRONTEND_URL=https://sparevest-frontend-67191398613.northamerica-northeast2.run.app"
 
