@@ -10,10 +10,18 @@ from app.api import user as user_router
 from app.api import auth as auth_router
 from app.api import bank_account as bank_account_router
 from app.api import transactions as transctions
-from app.api import portfolio as portfolio_router
 from app.core.config import FRONTEND_URL
+from app.api import portfolio as portfolio_router
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],        # allow requests from any origin
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Health-check endpoint
 @app.get("/healthz")
@@ -24,20 +32,6 @@ async def healthz():
 @app.get("/")
 async def root():
     return {"message": "Welcome to the SpareVest API"}
-
-# CORS configuration
-origins = [
-    "http://localhost:80",
-    "http://localhost",
-    FRONTEND_URL
-]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # Your API routers
 app.include_router(user_router.router)
