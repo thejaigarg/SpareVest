@@ -19,11 +19,14 @@ export default function BalanceGoalProgress({
   return (
     <Box sx={{
       bgcolor: "white",
-      borderRadius: 3,
-      boxShadow: 1,
+      borderRadius: 4,
+      boxShadow: "0px 0px 32px 5px rgba(0, 0, 0, 0.16)",
+      border: "2.5px solid rgb(255, 255, 255)",
       p: { xs: 3, sm: 4 },
       mb: { xs: 4, sm: 6 },
-      textAlign: "center"
+      textAlign: "center",
+      maxWidth: 700,
+      mx: "auto"
     }}>
       <Typography variant="h3" fontWeight={700}>
         {symbol}{Number(balance).toLocaleString()}
@@ -31,18 +34,26 @@ export default function BalanceGoalProgress({
       <Typography color="text.secondary" fontWeight={600} gutterBottom>
         Total Balance
       </Typography>
-      
+
       {/* Progress line: "$X of $Goal" and percent */}
       <Box
         display="flex"
         alignItems="center"
         justifyContent="space-between"
         mt={2} mb={1}
+
       >
-        <Typography variant="body2">
+        <Typography
+          variant="h5"
+          sx={{ fontWeight: 70, fontSize: { xs: 16, sm: 20 } }}
+        >
           {symbol}{Math.round(roundupBucket)} of {symbol}{Math.round(savingsGoal)}
         </Typography>
-        <Typography variant="body2" color="primary" sx={{ fontWeight: 600 }}>
+        <Typography
+          variant="h5"
+          color="#6366f1"
+          sx={{ fontWeight: 700, fontSize: { xs: 16, sm: 20 } }}
+        >
           {percentToGoal || 0}%
         </Typography>
       </Box>
@@ -66,7 +77,7 @@ export default function BalanceGoalProgress({
         <Button
           variant="contained"
           size="large"
-          sx={{ bgcolor: "#6366f1", ":hover": { bgcolor: "#4f46e5" } }}
+          sx={{ bgcolor: "#6366f1", ":hover": { bgcolor: "#463ecf" } }}
           onClick={onAddTransaction}
           disabled={disableActions || loadingActions}
         >
@@ -75,7 +86,7 @@ export default function BalanceGoalProgress({
         <Button
           variant="outlined"
           size="large"
-          sx={{ borderColor: "#6366f1", color: "#6366f1", ":hover": { borderColor: "#4f46e5", color: "#4f46e5" } }}
+          sx={{ borderColor: "#6366f1", color: "#6366f1", ":hover": { borderColor: "#4f46e5", bgcolor: "#4f46e5", color: "white" } }}
           onClick={onTransferNow}
           disabled={disableActions || loadingActions}
         >

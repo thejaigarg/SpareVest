@@ -42,7 +42,13 @@ export default function Navbar() {
   };
 
   return (
-    <AppBar position="static" color="transparent" elevation={0}>
+       <AppBar
+      position="static"
+      elevation={5}
+      sx={{
+        bgcolor: "background.paper"       
+      }}
+    >
       <Toolbar>
         {/* Logo text at the left */}
         <Typography
