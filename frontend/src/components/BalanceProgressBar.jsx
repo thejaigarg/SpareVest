@@ -57,7 +57,10 @@ export default function BalanceGoalProgress({
           backgroundColor: "#e5e7eb",
           "& .MuiLinearProgress-bar": {
             backgroundColor: "#6366f1"
-          }
+          },
+          maxWidth: 600,
+          mx: "auto",
+          my: 2, 
         }}
       />
 

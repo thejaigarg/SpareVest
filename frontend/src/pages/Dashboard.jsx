@@ -6,6 +6,12 @@ import { useNavigate } from "react-router-dom";
 import { useBankAccounts } from "../hooks/useBankAccounts";
 import { usePortfolio } from "../hooks/usePortfolio";
 import BalanceGoalProgress from "../components/BalanceProgressBar";
+import StatsCard from "../components/StatsCard";
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
+import { Grid } from "@mui/material";
+import { getCurrencySymbol } from "../utils/currencySymbol";
 
 export default function Dashboard() {
   const { token, user } = useAuth();
@@ -93,18 +99,77 @@ if (portfolioError) {
 
 // -- Render top card once portfolio loaded
 return (
-  <Box p={{ xs: 2, sm: 4 }}>
-    <BalanceGoalProgress
-      balance={summary.sparevest_balance}
-      roundupBucket={summary.roundup_bucket}
-      savingsGoal={summary.savings_goal}
-      percentToGoal={Math.round(summary.percent_to_goal)}
-      currency={user.currency}
-      onAddTransaction={() => {}} // will add next!
-      onTransferNow={() => {}}    // will add next!
-    />
-    {/* Next: stats row, and recent transactions */}
-    {/* ... */}
-  </Box>
+  <>
+    {/* Top Balance/Goal Card */}
+    <Box p={{ xs: 2, sm: 4 }}>
+      <BalanceGoalProgress
+        balance={summary.sparevest_balance}
+        roundupBucket={summary.roundup_bucket}
+        savingsGoal={summary.savings_goal}
+        percentToGoal={Math.round(summary.percent_to_goal)}
+        currency={user.currency}
+        onAddTransaction={() => {}}
+        onTransferNow={() => {}}
+      />
+    </Box>
+
+    {/* Stats row */}
+    <Box mb={4} display="flex" justifyContent="center">
+      <Grid container spacing={2} sx={{ maxWidth: 600 }} justifyContent="center">
+        {/* This Month */}
+        <Grid item xs={12} sm={6}>
+          <StatsCard
+            title="This Month"
+            value={
+              getCurrencySymbol(user.currency) +
+              Number(summary.this_month_saved).toLocaleString()
+            }
+            subtitle="You've saved this month"
+            color="success.main"
+          />
+        </Grid>
+        {/* Vs Last Month */}
+        <Grid item xs={12} sm={6}>
+          <StatsCard
+            title="vs Last Month"
+            value={
+              summary.percent_increase > 0
+                ? (
+                  <>
+                    <ArrowUpwardIcon color="success" fontSize="inherit" style={{ verticalAlign: "middle" }} />
+                    <span style={{ color: "#16a34a", fontWeight: 700 }}>
+                      {" +" + summary.percent_increase + "%"}
+                    </span>
+                  </>
+                )
+                : summary.percent_increase < 0
+                ? (
+                  <>
+                    <ArrowDownwardIcon color="error" fontSize="inherit" style={{ verticalAlign: "middle" }} />
+                    <span style={{ color: "#dc2626", fontWeight: 700 }}>
+                      {" " + summary.percent_increase + "%"}
+                    </span>
+                  </>
+                )
+                : (
+                  <>
+                    <TrendingFlatIcon color="disabled" fontSize="inherit" style={{ verticalAlign: "middle" }} />
+                    <span style={{ color: "#64748b", fontWeight: 700 }}> 0%</span>
+                  </>
+                )
+            }
+            subtitle={
+              summary.percent_increase > 0
+                ? `${summary.percent_increase}% increase`
+                : summary.percent_increase < 0
+                  ? `${Math.abs(summary.percent_increase)}% decrease`
+                  : null
+            }
+            color="secondary.main"
+          />
+        </Grid>
+      </Grid>
+    </Box>
+  </>
 );
 }
