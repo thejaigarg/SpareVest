@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from enum import Enum
 from typing import List, Optional
 from pydantic import BaseModel, Field
 
@@ -40,11 +41,14 @@ class HoldingsResponse(BaseModel):
 
 
 # ── Transactions ──────────────────────────────────────────────────────────────
-
+class TransactionType(str, Enum):
+    BUY = "BUY"
+    SELL = "SELL"
+    
 class TransactionRecord(BaseModel):
     id: int
     timestamp: datetime
-    type: str = Field(..., regex="^(BUY|SELL)$")
+    type: TransactionType
     stockId: int
     ticker: str
     quantity: float
@@ -58,7 +62,7 @@ class TransactionsResponse(BaseModel):
     total: int
 
 class TransactionCreate(BaseModel):
-    type: str = Field(..., regex="^(BUY|SELL)$")
+    type: TransactionType
     stockId: int
     quantity: float
     pricePerShare: Optional[float]  # server can default to lastPrice if omitted

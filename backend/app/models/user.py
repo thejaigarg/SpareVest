@@ -18,3 +18,4 @@ class User(Base):
     portfolio = relationship("Portfolio", uselist=False, back_populates="user")
     bank_accounts = relationship("BankAccount", back_populates="user")
     transactions = relationship("Transaction", back_populates="user")
+    stock_transactions = relationship("StockTransaction", back_populates="user", cascade="all, delete-orphan")

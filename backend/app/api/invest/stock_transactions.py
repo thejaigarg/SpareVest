@@ -9,10 +9,10 @@ from app.crud import stocks as crud_stocks
 from app.core.database import get_db
 from app.api.deps import get_current_user
 
-router = APIRouter(prefix="/transactions", tags=["transactions"])
+router = APIRouter(prefix="/stock-transactions", tags=["transactions"])
 
 @router.get("/", response_model=List[TransactionRecord])
-def list_transactions(
+def list_stock_transactions (
     type: Optional[str] = Query(None, regex="^(BUY|SELL)$"),
     from_date: Optional[str] = Query(None, alias="from"),
     to_date: Optional[str] = Query(None, alias="to"),
@@ -21,7 +21,7 @@ def list_transactions(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
-    return crud_stocks.list_transactions(
+    return crud_stocks.list_stock_transactions(
         db,
         user_id=current_user.id,
         type=type,
@@ -32,12 +32,12 @@ def list_transactions(
     )
 
 @router.post("/", response_model=TransactionRecord, status_code=201)
-def create_transaction(
+def create_stock_transaction(
     payload: TransactionCreate,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
-    return crud_stocks.create_transaction(
+    return crud_stocks.create_stock_transaction(
         db,
         user_id=current_user.id,
         tx=payload,
