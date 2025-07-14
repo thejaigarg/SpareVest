@@ -15,6 +15,6 @@ class Stock(Base):
 
     # Relationships
     holdings = relationship("Holding", back_populates="stock")
-    transactions = relationship("stock_transaction", back_populates="stock")
+    transactions = relationship("StockTransaction", back_populates="stock")
     watchlist_entries = relationship("WatchlistEntry", back_populates="stock")
     price_history = relationship("PriceHistory", back_populates="stock")

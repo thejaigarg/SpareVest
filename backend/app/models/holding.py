@@ -6,7 +6,7 @@ class Holding(Base):
     __tablename__ = "holding"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     stock_id = Column(Integer, ForeignKey("stock.id"), nullable=False)
     quantity = Column(Numeric, nullable=False, default=0)
     avg_cost = Column(Numeric, nullable=False, default=0)

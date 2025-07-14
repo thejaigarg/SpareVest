@@ -19,3 +19,13 @@ class User(Base):
     bank_accounts = relationship("BankAccount", back_populates="user")
     transactions = relationship("Transaction", back_populates="user")
     stock_transactions = relationship("StockTransaction", back_populates="user", cascade="all, delete-orphan")
+    holdings = relationship(
+       "Holding",
+       back_populates="user",
+       cascade="all, delete-orphan",
+    )
+    watchlist_entries = relationship(
+       "WatchlistEntry",
+      back_populates="user",
+       cascade="all, delete-orphan",
+    )

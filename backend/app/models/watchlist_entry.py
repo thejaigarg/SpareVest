@@ -6,7 +6,7 @@ class WatchlistEntry(Base):
     __tablename__ = "watchlist_entry"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     stock_id = Column(Integer, ForeignKey("stock.id"), nullable=False)
     added_at = Column(DateTime, server_default=func.now())
 

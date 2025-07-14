@@ -10,7 +10,7 @@ class StockTransaction(Base):
     __tablename__ = "stock_transaction"
 
     id               = Column(Integer, primary_key=True, index=True)
-    user_id          = Column(Integer, ForeignKey("user.id"), nullable=False)
+    user_id          = Column(Integer, ForeignKey("users.id"), nullable=False)
     stock_id         = Column(Integer, ForeignKey("stock.id"), nullable=False)
     type             = Column(String(10), nullable=False)  # BUY or SELL
     quantity         = Column(Numeric, nullable=False)
