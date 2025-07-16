@@ -8,7 +8,6 @@ from fastapi.responses import JSONResponse
 
 from app.api import user as user_router
 from app.api import auth as auth_router
-from app.api import market
 from app.api.invest import invest_routers
 from app.api.savings import savings_routers
 
@@ -36,7 +35,6 @@ async def root():
 # Include shared routers
 app.include_router(user_router.router)
 app.include_router(auth_router.router)
-app.include_router(market.router)
 
 # Include feature-group routers
 for router in invest_routers:

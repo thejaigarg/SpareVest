@@ -1,8 +1,8 @@
 # API routes for transactions.py
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
-from app.schemas.transaction import TransactionCreate, TransactionInDB
-from app.crud import transaction as crud_tx
+from app.schemas.savings.transaction import TransactionCreate, TransactionInDB
+from app.crud.savings import transaction as crud_tx
 from app.core.database import get_db
 from app.api.deps import get_current_user
 

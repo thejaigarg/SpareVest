@@ -1,7 +1,8 @@
 # Pydantic schema for user.py
 from pydantic import BaseModel, EmailStr
+from app.schemas.base import OrmModel
 
-class UserClass(BaseModel):
+class UserClass(OrmModel):
     email: EmailStr
     full_name: str | None = None
 
@@ -18,9 +19,9 @@ class UserInDB(UserClass):
     class Config:
         from_attributes = True
 
-class PasswordResetRequest(BaseModel):
+class PasswordResetRequest(OrmModel):
     email: EmailStr
 
-class PasswordResetConfirm(BaseModel):
+class PasswordResetConfirm(OrmModel):
     token: str
     new_password: str

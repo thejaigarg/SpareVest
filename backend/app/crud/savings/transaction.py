@@ -1,10 +1,10 @@
 # DB access logic for transaction.py
 from sqlalchemy.orm import Session
-from app.models.transaction import Transaction
-from app.models.portfolio import Portfolio
-from app.models.bank_account import BankAccount
+from app.models.savings.transaction import Transaction
+from app.models.savings.portfolio import Portfolio
+from app.models.savings.bank_account import BankAccount
 from app.models.user import User
-from app.schemas.transaction import TransactionCreate
+from app.schemas.savings.transaction import TransactionCreate
 import math
 
 def calculate_round_up(amount: float) -> float:

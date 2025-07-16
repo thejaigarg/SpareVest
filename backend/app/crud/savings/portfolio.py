@@ -1,4 +1,4 @@
-from app.schemas.portfolio import PortfolioSummary
+from app.schemas.savings.portfolio import PortfolioSummary
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 

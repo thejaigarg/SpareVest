@@ -35,6 +35,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app.core.database import Base
 from app.models import *
+import app.models.invest
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

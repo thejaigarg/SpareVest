@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, func
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, func, Numeric
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -12,6 +12,14 @@ class Stock(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
+
+     # — New “last quote” snapshot fields —
+    last_price        = Column(Numeric, nullable=True)    # Finnhub’s `c`
+    day_open          = Column(Numeric, nullable=True)    # Finnhub’s `o`
+    day_high          = Column(Numeric, nullable=True)    # Finnhub’s `h`
+    day_low           = Column(Numeric, nullable=True)    # Finnhub’s `l`
+    prev_close        = Column(Numeric, nullable=True)    # Finnhub’s `pc`
+    quote_fetched_at  = Column(DateTime, nullable=True)   # when these were last updated
 
     # Relationships
     holdings = relationship("Holding", back_populates="stock")

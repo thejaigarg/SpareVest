@@ -1,7 +1,8 @@
 # Pydantic schema for portfolio.py
 from pydantic import BaseModel, Field
+from app.schemas.base import OrmModel
 
-class PortfolioSummary(BaseModel):
+class PortfolioSummary(OrmModel):
     id: int
     savings_goal: float
     sparevest_balance: float
@@ -11,7 +12,7 @@ class PortfolioSummary(BaseModel):
     last_month_saved: float
     percent_increase: float | None = None
 
-class PortfolioGoalUpdate(BaseModel):
+class PortfolioGoalUpdate(OrmModel):
     savings_goal: float = Field(..., gt=0, description="New savings goal (must be positive)")
 
     class Config:

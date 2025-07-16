@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from app.models.bank_account import BankAccount
-from app.schemas.back_account import BankAccountCreate
+from app.models.savings.bank_account import BankAccount
+from app.schemas.savings.back_account import BankAccountCreate
 
 def create_bank_account(db: Session, user_id: int, bank: BankAccountCreate):
 

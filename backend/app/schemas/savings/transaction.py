@@ -1,8 +1,9 @@
 # Pydantic schema for transaction.py
 from pydantic import BaseModel
 from datetime import datetime
+from app.schemas.base import OrmModel
 
-class TransactionBase(BaseModel):
+class TransactionBase(OrmModel):
     amount: float
     description: str
     type: str = "purchase"
