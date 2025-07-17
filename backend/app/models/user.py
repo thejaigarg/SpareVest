@@ -1,3 +1,4 @@
+# backend/app/models/user.py
 # SQLAlchemy model for user.py
 from sqlalchemy import Column, Integer, String, Float
 from sqlalchemy.ext.declarative import declarative_base
@@ -18,3 +19,14 @@ class User(Base):
     portfolio = relationship("Portfolio", uselist=False, back_populates="user")
     bank_accounts = relationship("BankAccount", back_populates="user")
     transactions = relationship("Transaction", back_populates="user")
+    stock_transactions = relationship("StockTransaction", back_populates="user", cascade="all, delete-orphan")
+    holdings = relationship(
+       "Holding",
+       back_populates="user",
+       cascade="all, delete-orphan",
+    )
+    watchlist_entries = relationship(
+       "WatchlistEntry",
+      back_populates="user",
+       cascade="all, delete-orphan",
+    )

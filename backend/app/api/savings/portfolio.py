@@ -5,8 +5,8 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from app.core.database import get_db
 from app.api.deps import get_current_user
-from app.schemas.portfolio import PortfolioSummary, PortfolioGoalUpdate
-from app.crud.portfolio import build_portfolio_summary
+from app.schemas.savings.portfolio import PortfolioSummary, PortfolioGoalUpdate
+from app.crud.savings.portfolio import build_portfolio_summary
 
 router = APIRouter(
     prefix = "/portfolio",

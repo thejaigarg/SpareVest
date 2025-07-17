@@ -1,41 +1,44 @@
 # backend/app/main.py
 
 import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.responses import FileResponse
 
 from app.api import user as user_router
 from app.api import auth as auth_router
-from app.api import bank_account as bank_account_router
-from app.api import transactions as transctions
-from app.core.config import FRONTEND_URL
-from app.api import portfolio as portfolio_router
+from app.api.invest import invest_routers
+from app.api.savings import savings_routers
 
 app = FastAPI()
 
+# CORS: allow your frontend origin (or use ["*"] during development)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],        # allow requests from any origin
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Health-check endpoint
+# Health-check
 @app.get("/healthz")
 async def healthz():
     return JSONResponse({"status": "ok"})
 
-# Root endpoint
+# Root
 @app.get("/")
 async def root():
     return {"message": "Welcome to the SpareVest API"}
 
-# Your API routers
+# Include shared routers
 app.include_router(user_router.router)
 app.include_router(auth_router.router)
-app.include_router(bank_account_router.router)
-app.include_router(transctions.router)
-app.include_router(portfolio_router.router)
+
+# Include feature-group routers
+for router in invest_routers:
+    app.include_router(router)
+
+for router in savings_routers:
+    app.include_router(router)

@@ -1,6 +1,7 @@
 from pydantic import BaseModel
+from app.schemas.base import OrmModel
 
-class BankAccountBase(BaseModel):
+class BankAccountBase(OrmModel):
     bank_name: str
     account_number: str
     currency: str

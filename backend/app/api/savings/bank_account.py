@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.schemas.back_account import BankAccountCreate, BankAccountInDB
-from app.crud import bank_account as crud_bank
+from app.schemas.savings.back_account import BankAccountCreate, BankAccountInDB
+from app.crud.savings import bank_account as crud_bank
 from app.core.database import get_db
 from app.api.deps import get_current_user
-from app.models.bank_account import BankAccount
+from app.models.savings.bank_account import BankAccount
 
 router = APIRouter(
     prefix="/bank-accounts",

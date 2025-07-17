@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.models.user import User
 from app.schemas.user import UserCreate
 from passlib.context import CryptContext
-from app.models.portfolio import Portfolio
+from app.models.savings.portfolio import Portfolio
 
 from app.core.security import verify_password
 
